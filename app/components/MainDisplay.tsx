@@ -168,8 +168,10 @@ export default function MainDisplay() {
   };
 
   return (
-    // <div style={{ backgroundColor: "#555", padding: 20, borderRadius: 5 }}>
     <div>
+      {/* <Box sx={{ pb: 9 }}>
+        <Typography align="center">Welcome</Typography>
+      </Box> */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -240,13 +242,8 @@ export default function MainDisplay() {
                   <Typography>Unsupported file format</Typography>
                 )}
                 <Stack sx={{ mt: 1 }}>
-                  <Typography variant="caption">{art.name}</Typography>
-                  <Typography
-                    variant="caption"
-                    align="center"
-                    style={{ fontFamily: "Helvetica" }}
-                  >
-                    {art.creators[0].creator_address}
+                  <Typography variant="caption" align={"center"} color="#999">
+                    {art.name}
                   </Typography>
                 </Stack>
               </Stack>
@@ -264,12 +261,7 @@ export default function MainDisplay() {
             }}
           >
             <Box style={{ display: "flex", justifyContent: "center" }}>
-              <Pagination
-                count={3}
-                page={page}
-                onChange={handlePageChange}
-                // color="primary"
-              />
+              <Pagination count={3} page={page} onChange={handlePageChange} />
             </Box>
           </Paper>
         </Stack>
