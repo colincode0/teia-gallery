@@ -68,7 +68,11 @@ type digitalArt = {
   decimals: number;
   description: string;
   display_uri: string;
-  extra: string;
+  extra: {
+    mime_type: string;
+    size: number;
+    uri: string;
+  };
   flag: string;
   highest_offer: number;
   is_boolean_amount: boolean;
@@ -84,14 +88,14 @@ type digitalArt = {
   supply: number;
   symbol: string;
   thumbnail_uri: string;
-  timestamp: number;
+  timestamp: string;
   tzip16_key: string;
   creators: {
     creator_address: string;
   }[];
 };
 
-function formatDate(dateString) {
+function formatDate(dateString: string) {
   const date = new Date(dateString);
   const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date
     .getFullYear()
@@ -102,7 +106,7 @@ function formatDate(dateString) {
   return formattedDate;
 }
 
-function formatHour(hour) {
+function formatHour(hour: number) {
   if (hour === 0) {
     return "12";
   } else if (hour > 12) {
@@ -112,7 +116,7 @@ function formatHour(hour) {
   }
 }
 
-function formatMinute(minute) {
+function formatMinute(minute: number) {
   if (minute < 10) {
     return `0${minute}`;
   } else {
@@ -120,7 +124,7 @@ function formatMinute(minute) {
   }
 }
 
-function formatAMPM(hour) {
+function formatAMPM(hour: number) {
   if (hour < 12) {
     return "AM";
   } else {
@@ -148,7 +152,10 @@ export default function MainDisplay() {
 
   const totalPages = Math.ceil(digitalArt.length / itemsPerPage);
 
-  const handlePageChange = (event, value) => {
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
     setPage(value);
   };
 
@@ -270,7 +277,7 @@ export default function MainDisplay() {
   );
 }
 
-function ImageItem({ art }) {
+function ImageItem({ art: art }: { art: digitalArt }) {
   const [itemOpen, setItemOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   return (
