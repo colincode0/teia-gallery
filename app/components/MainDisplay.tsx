@@ -56,10 +56,18 @@ const GET_DIGITAL_ART = gql`
   }
 `;
 
-function ipfsHashToUrl(hash) {
+function ipfsHashToUrl(hash: string) {
   if (!hash) return null;
   const cleanHash = hash.replace("ipfs://", "");
   return `https://ipfs.io/ipfs/${cleanHash}`;
+}
+
+function shuffleArray(array: any[]) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 }
 
 type digitalArt = {
@@ -68,11 +76,11 @@ type digitalArt = {
   decimals: number;
   description: string;
   display_uri: string;
-  extra: {
+  extra: Array<{
     mime_type: string;
     size: number;
     uri: string;
-  };
+  }>;
   flag: string;
   highest_offer: number;
   is_boolean_amount: boolean;
@@ -168,89 +176,82 @@ export default function MainDisplay() {
         transition={{ delay: 1 }}
       >
         <Grid container spacing={1}>
-          {digitalArt
-            .slice()
-            .sort((a, b) => b.last_listed - a.last_listed)
-            .filter(
-              (art) =>
-                !unwantedAddresses.some(
-                  (address) => address === art.creators[0].creator_address
-                )
-            )
-            .map((art, i) => (
-              <Grid item xs={12} md={4} lg={3} key={i}>
-                <Stack
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {art.extra[0].mime_type.startsWith("video/") ? (
-                    <div
-                      style={{
-                        backgroundImage: `url(${ipfsHashToUrl(
-                          art.display_uri || art.thumbnail_uri
-                        )})`,
-                        backgroundSize: "contain",
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "center center",
-                        width: "300px",
-                        height: "300px",
-                        maxWidth: "100%",
-                        maxHeight: "100%",
-                      }}
-                    />
-                  ) : art.extra[0].mime_type === "image/jpeg" ||
-                    art.extra[0].mime_type === "image/png" ||
-                    art.extra[0].mime_type === "image/gif" ? (
-                    <div>
-                      <ImageItem art={art} />
-                    </div>
-                  ) : art.extra[0].mime_type === "audio/mpeg" ? (
-                    <audio src={ipfsHashToUrl(art.extra[0].uri)} controls />
-                  ) : art.extra[0].mime_type === "application/x-directory" ? (
-                    <IframeItem art={art} />
-                  ) : art.display_uri ? (
-                    <div
-                      style={{
-                        backgroundImage: `url(${ipfsHashToUrl(
-                          art.display_uri
-                        )})`,
-                        backgroundSize: "contain",
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "center center",
-                        width: "300px",
-                        height: "300px",
-                        maxWidth: "100%",
-                        maxHeight: "100%",
-                      }}
-                    />
-                  ) : (
-                    <Typography>Unsupported file format</Typography>
-                  )}
-                  <Stack sx={{ mt: 1 }}>
-                    <Typography variant="caption">{art.name}</Typography>
-                    {/* <Box
+          {shuffleArray(
+            digitalArt
+              .slice()
+              .sort((a, b) => b.last_listed - a.last_listed)
+              .filter(
+                (art) =>
+                  !unwantedAddresses.some(
+                    (address) => address === art.creators[0].creator_address
+                  )
+              )
+          ).map((art, i) => (
+            <Grid item xs={12} md={4} lg={3} key={i}>
+              <Stack
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {art.extra[0].mime_type.startsWith("video/") ? (
+                  <div
                     style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      width: 120,
-                      wordBreak: "break-all",
+                      backgroundImage: `url(${ipfsHashToUrl(
+                        art.display_uri || art.thumbnail_uri
+                      )})`,
+                      backgroundSize: "contain",
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "center center",
+                      width: "300px",
+                      height: "300px",
+                      maxWidth: "100%",
+                      maxHeight: "100%",
                     }}
-                  > */}
-                    <Typography
-                      variant="caption"
-                      align="center"
-                      style={{ fontFamily: "Helvetica" }}
-                    >
-                      {art.creators[0].creator_address}
-                    </Typography>
-                    {/* </Box> */}
-                  </Stack>
+                  />
+                ) : art.extra[0].mime_type === "image/jpeg" ||
+                  art.extra[0].mime_type === "image/png" ||
+                  art.extra[0].mime_type === "image/gif" ? (
+                  <div>
+                    <ImageItem art={art} />
+                  </div>
+                ) : art.extra[0].mime_type === "audio/mpeg" ? (
+                  <audio
+                    src={ipfsHashToUrl(art.extra[0].uri) as string}
+                    controls
+                  />
+                ) : art.extra[0].mime_type === "application/x-directory" ? (
+                  <IframeItem art={art} />
+                ) : art.display_uri ? (
+                  <div
+                    style={{
+                      backgroundImage: `url(${ipfsHashToUrl(art.display_uri)})`,
+                      backgroundSize: "contain",
+                      backgroundRepeat: "no-repeat",
+                      backgroundPosition: "center center",
+                      width: "300px",
+                      height: "300px",
+                      maxWidth: "100%",
+                      maxHeight: "100%",
+                    }}
+                  />
+                ) : (
+                  <Typography>Unsupported file format</Typography>
+                )}
+                <Stack sx={{ mt: 1 }}>
+                  <Typography variant="caption">{art.name}</Typography>
+                  <Typography
+                    variant="caption"
+                    align="center"
+                    style={{ fontFamily: "Helvetica" }}
+                  >
+                    {art.creators[0].creator_address}
+                  </Typography>
                 </Stack>
-              </Grid>
-            ))}
+              </Stack>
+            </Grid>
+          ))}
         </Grid>
         <Stack spacing={2}>
           <Paper
@@ -345,7 +346,7 @@ function ImageItem({ art: art }: { art: digitalArt }) {
   );
 }
 
-function IframeItem({ art }) {
+function IframeItem({ art: art }: { art: digitalArt }) {
   const [itemOpen, setItemOpen] = useState(false);
   return (
     <div>
@@ -364,7 +365,7 @@ function IframeItem({ art }) {
       />
       <Dialog open={itemOpen} onClose={() => setItemOpen(false)}>
         <iframe
-          src={ipfsHashToUrl(art.extra[0].uri)}
+          src={ipfsHashToUrl(art.extra[0].uri) as string}
           width="600"
           height="600"
           style={{ border: 0 }}
