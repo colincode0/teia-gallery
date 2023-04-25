@@ -147,7 +147,7 @@ export default function MainDisplay() {
     "tz1LtRavzB4VYRuYwcMbohYnV6SU2iRnU5DF",
   ];
 
-  const itemsPerPage = 90;
+  const itemsPerPage = 60;
   const { loading, error, data } = useQuery(GET_DIGITAL_ART, {
     variables: { limit: itemsPerPage, offset: (page - 1) * itemsPerPage },
   });
@@ -259,7 +259,7 @@ export default function MainDisplay() {
               p: 2,
               display: "flex",
               flexDirection: "column",
-              bgcolor: "#222",
+              bgcolor: "#777",
               my: 2,
             }}
           >
@@ -268,7 +268,7 @@ export default function MainDisplay() {
                 count={3}
                 page={page}
                 onChange={handlePageChange}
-                color="primary"
+                // color="primary"
               />
             </Box>
           </Paper>
