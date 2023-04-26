@@ -5,15 +5,19 @@ import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 import {
   Button,
+  CircularProgress,
   Dialog,
   Divider,
   Grid,
   Paper,
+  Skeleton,
   Typography,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { motion } from "framer-motion";
 import Link from "next/link";
+
+// Background black doesn't show up on mobile chrome
 
 const GET_DIGITAL_ART = gql`
   query MyQuery($limit: Int!, $offset: Int!) {
@@ -275,29 +279,35 @@ function ImageItem({ art: art }: { art: digitalArt }) {
   const [loading, setLoading] = useState(false);
   return (
     <div>
-      <div
-        onClick={() => setItemOpen(true)}
-        style={{
-          backgroundImage: `url(${ipfsHashToUrl(art.extra[0].uri)})`,
-          backgroundSize: "contain",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center center",
-          width: "300px",
-          height: "300px",
-          maxWidth: "100%",
-          maxHeight: "100%",
-        }}
-      />
+      {loading ? (
+        <Skeleton variant="rectangular" width={300} height={300} />
+      ) : (
+        <div
+          onClick={() => setItemOpen(true)}
+          style={{
+            backgroundImage: `url(${ipfsHashToUrl(art.extra[0].uri)})`,
+            backgroundSize: "contain",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center center",
+            width: "300px",
+            height: "300px",
+            maxWidth: "100%",
+            maxHeight: "100%",
+          }}
+        />
+      )}
       <Dialog
         open={itemOpen}
         onClose={() => setItemOpen(false)}
-        sx={{
-          "& .MuiBackdrop-root": {
-            backgroundColor: "rgba(0, 0, 0, 0.95)",
-          },
-        }}
+        // sx={{
+        //   "& .MuiBackdrop-root": {
+        //     backgroundColor: "rgba(0, 0, 0, 0.95)",
+        //   },
+        // }}
+        sx={{ bgcolor: "black", color: "white" }}
       >
         <div
+          onClick={() => setItemOpen(false)}
           style={{
             backgroundImage: `url(${ipfsHashToUrl(art.extra[0].uri)})`,
             backgroundSize: "contain",

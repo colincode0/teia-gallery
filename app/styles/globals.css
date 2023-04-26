@@ -85,8 +85,8 @@ body {
   overflow-x: hidden;
   scrollbar-width: thin; /* For Firefox */
   overflow-y: scroll; /* Always show a scrollbar for other browsers */
+  background-color: "#000000";
 }
-
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
