@@ -260,12 +260,12 @@ export default function MainDisplay() {
               p: 2,
               display: "flex",
               flexDirection: "column",
-              bgcolor: "#777",
+              bgcolor: "#444",
               my: 2,
             }}
           >
             <Box style={{ display: "flex", justifyContent: "center" }}>
-              <Pagination count={3} page={page} onChange={handlePageChange} />
+              <Pagination count={5} page={page} onChange={handlePageChange} />
             </Box>
           </Paper>
         </Stack>
@@ -313,8 +313,8 @@ function ImageItem({ art: art }: { art: digitalArt }) {
             backgroundSize: "contain",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center center",
-            width: "600px",
-            height: "600px",
+            width: "500px",
+            height: "500px",
             maxWidth: "100%",
             maxHeight: "100%",
             backgroundColor: "black",
@@ -324,7 +324,7 @@ function ImageItem({ art: art }: { art: digitalArt }) {
           sx={{
             bgcolor: "black",
             color: "white",
-            p: 2,
+            p: 1,
             display: "flex",
           }}
         >
