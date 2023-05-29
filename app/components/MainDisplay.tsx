@@ -12,6 +12,7 @@ import {
   Paper,
   Skeleton,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { motion } from "framer-motion";
@@ -144,6 +145,7 @@ function formatAMPM(hour: number) {
   }
 }
 export default function MainDisplay() {
+  const isMobile = useMediaQuery("(max-width:600px)");
   const [digitalArt, setDigitalArt] = useState<digitalArt[]>([]);
   const [page, setPage] = useState(1);
   const unwantedAddresses = [
@@ -181,7 +183,11 @@ export default function MainDisplay() {
           height: "66vh",
         }}
       >
-        <CircularProgress color={"error"} thickness={0.5} size={200} />
+        <CircularProgress
+          color={"error"}
+          thickness={0.5}
+          size={isMobile ? 50 : 200}
+        />
       </Box>
     );
 
@@ -355,13 +361,15 @@ function ImageItem({ art: art }: { art: digitalArt }) {
           <Typography variant="caption">
             Description: {art.description}
           </Typography>
-          <Button
-            variant="outlined"
-            fullWidth
-            onClick={() => setItemOpen(false)}
-          >
-            Close
-          </Button>
+          <Box sx={{ flexGrow: 1 }}>
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={() => setItemOpen(false)}
+            >
+              Close
+            </Button>
+          </Box>
         </Stack>
       </Dialog>
     </div>
