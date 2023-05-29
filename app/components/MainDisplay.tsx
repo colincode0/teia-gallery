@@ -181,7 +181,7 @@ export default function MainDisplay() {
           height: "66vh",
         }}
       >
-        <CircularProgress color={"success"} thickness={0.5} size={300} />
+        <CircularProgress color={"error"} thickness={0.5} size={200} />
       </Box>
     );
 
