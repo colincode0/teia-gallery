@@ -361,7 +361,7 @@ function ImageItem({ art: art }: { art: digitalArt }) {
           <Typography variant="caption">
             Description: {art.description}
           </Typography>
-          <Box sx={{ flexGrow: 1 }}>
+          <Box sx={{ mt: 2 }}>
             <Button
               variant="outlined"
               fullWidth
