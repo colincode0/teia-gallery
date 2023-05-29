@@ -355,6 +355,13 @@ function ImageItem({ art: art }: { art: digitalArt }) {
           <Typography variant="caption">
             Description: {art.description}
           </Typography>
+          <Button
+            variant="outlined"
+            fullWidth
+            onClick={() => setItemOpen(false)}
+          >
+            Close
+          </Button>
         </Stack>
       </Dialog>
     </div>
