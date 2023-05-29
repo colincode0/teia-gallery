@@ -171,11 +171,22 @@ export default function MainDisplay() {
     setPage(value);
   };
 
+  if (loading)
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "66vh",
+        }}
+      >
+        <CircularProgress color={"success"} thickness={0.5} size={300} />
+      </Box>
+    );
+
   return (
     <div>
-      {/* <Box sx={{ pb: 9 }}>
-        <Typography align="center">Welcome</Typography>
-      </Box> */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -299,12 +310,14 @@ function ImageItem({ art: art }: { art: digitalArt }) {
       <Dialog
         open={itemOpen}
         onClose={() => setItemOpen(false)}
-        // sx={{
-        //   "& .MuiBackdrop-root": {
-        //     backgroundColor: "rgba(0, 0, 0, 0.95)",
-        //   },
-        // }}
-        sx={{ bgcolor: "black", color: "white" }}
+        sx={{
+          "& .MuiBackdrop-root": {
+            backgroundColor: "rgba(0, 0, 0, 0.95)",
+          },
+          "& .MuiDialog-paper": {
+            backgroundColor: "black",
+          },
+        }}
       >
         <div
           onClick={() => setItemOpen(false)}
