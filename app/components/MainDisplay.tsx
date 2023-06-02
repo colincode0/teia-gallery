@@ -18,12 +18,6 @@ export default function ToggleButtons() {
     }
   };
 
-  // useEffect(() => {
-  //   if (router.query.addess != undefined) {
-  //     setView(2);
-  //   }
-  // }, [router.query]);
-
   return (
     <>
       {view != 2 && (

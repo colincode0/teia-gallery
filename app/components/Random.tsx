@@ -343,6 +343,8 @@ function ImageItem({ art: art }: { art: digitalArt }) {
             color: "white",
             p: 1,
             display: "flex",
+
+            wordWrap: "break-word",
           }}
         >
           <Typography variant="h4">Title: {art.name}</Typography>
