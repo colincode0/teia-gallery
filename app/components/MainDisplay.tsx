@@ -5,41 +5,58 @@ import { Box, Button, Paper } from "@mui/material";
 import Random from "./Random";
 import Sorted from "./Sorted";
 import YourOwn from "./YourOwn";
+import router, { useRouter } from "next/router";
 
 export default function ToggleButtons() {
+  const router = useRouter();
   const [view, setView] = useState(0);
 
-  const handleView = (event: any, newView: any) => {
-    setView(newView);
+  const handleView = (event: any, newValue: any) => {
+    setView(newValue);
+    if (newValue === 2) {
+      router.push("/");
+    }
   };
+
+  // useEffect(() => {
+  //   if (router.query.addess != undefined) {
+  //     setView(2);
+  //   }
+  // }, [router.query]);
 
   return (
     <>
       {view != 2 && (
         <Paper
           elevation={3}
-          sx={{ mb: 4 }}
-          // style={{
-          //   display: "flex",
-          //   justifyContent: "space-between",
-          //   alignItems: "center",
-          //   gap: "1rem",
-          //   padding: "1rem",
-          // }}
+          sx={{ mb: 4, border: "1px solid #888", background: "#222" }}
         >
           <ToggleButtonGroup value={view} exclusive onChange={handleView}>
-            <ToggleButton value={0}>Random</ToggleButton>
-            <ToggleButton value={1}>Latest</ToggleButton>
-            <ToggleButton value={2}>View your own</ToggleButton>
+            <ToggleButton
+              value={0}
+              sx={{
+                color: view === 0 ? "#000" : "#888",
+              }}
+            >
+              Random
+            </ToggleButton>
+            <ToggleButton
+              value={1}
+              sx={{
+                color: view === 1 ? "#000" : "#888",
+              }}
+            >
+              Latest
+            </ToggleButton>
+            <ToggleButton
+              value={2}
+              sx={{
+                color: view === 2 ? "#000" : "#888",
+              }}
+            >
+              View your own
+            </ToggleButton>
           </ToggleButtonGroup>
-
-          {/* <Button
-            onClick={() => {
-              setView(2);
-            }}
-          >
-            View your own
-          </Button> */}
         </Paper>
       )}
 

@@ -190,6 +190,10 @@ export default function YourOwn({ setView }: { setView: Function }) {
     });
   };
 
+  useEffect(() => {
+    console.log("digitalArt", digitalArt);
+  }, [digitalArt]);
+
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
     value: number
@@ -382,7 +386,7 @@ export default function YourOwn({ setView }: { setView: Function }) {
               </Grid>
             ))}
         </Grid>
-        {searched && (
+        {digitalArt.length > 0 && (
           <Stack spacing={2}>
             <Paper
               sx={{
@@ -402,6 +406,20 @@ export default function YourOwn({ setView }: { setView: Function }) {
               </Box>
             </Paper>
           </Stack>
+        )}
+        {digitalArt.length == 0 && searched && (
+          <Button
+            variant="outlined"
+            onClick={() => setView(0)}
+            sx={{
+              mt: 2,
+              width: 300,
+              color: color,
+              borderColor: color,
+            }}
+          >
+            Go Back
+          </Button>
         )}
       </motion.div>
     </div>
