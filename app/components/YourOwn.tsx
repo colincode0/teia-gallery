@@ -138,7 +138,17 @@ function formatAMPM(hour: number) {
     return "PM";
   }
 }
-export default function YourOwn() {
+
+const generateRandomColor = () => {
+  const letters = "ABCDEFabcdef0123456789";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 10 + 6)];
+  }
+  return color;
+};
+
+export default function YourOwn({ setView }: { setView: Function }) {
   const router = useRouter();
   const { tz } = router.query;
   const isMobile = useMediaQuery("(max-width:600px)");
@@ -146,7 +156,7 @@ export default function YourOwn() {
   const [page, setPage] = useState(1);
   const [address, setAddress] = useState("");
   const [searched, setSearched] = useState(false);
-
+  const [color, setColor] = useState(generateRandomColor());
   const handleChangeAddress = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAddress(event.target.value);
   };
@@ -193,6 +203,7 @@ export default function YourOwn() {
       getDigitalArt();
       setSearched(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tz]);
 
   if (loading)
@@ -233,9 +244,10 @@ export default function YourOwn() {
               mx: "auto",
               width: "100vw",
               height: "fit-content",
-              pt: "30vh",
+              pt: "20vh",
             }}
           >
+            {/* <Box sx={{ height: 300, width: 300, bgcolor: "#bbb" }} /> */}
             <TextField
               label="Enter address here"
               onChange={handleChangeAddress}
@@ -246,16 +258,16 @@ export default function YourOwn() {
                   color: "#fff",
                 },
                 "& .MuiFormLabel-root": {
-                  color: "#0f0",
+                  color: color,
                   textAlign: "center",
                 },
                 "& .MuiOutlinedInput-root": {
                   "&.Mui-focused fieldset": {
-                    borderColor: "#0f0",
+                    borderColor: color,
                   },
                 },
                 "& .MuiInputBase-input::placeholder": {
-                  color: "#0f0",
+                  color: color,
                 },
               }}
             />
@@ -265,11 +277,23 @@ export default function YourOwn() {
               sx={{
                 mt: 2,
                 width: 300,
-                color: "#0f0",
-                borderColor: "#0f0",
+                color: color,
+                borderColor: color,
               }}
             >
               Submit
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => setView(0)}
+              sx={{
+                mt: 2,
+                width: 300,
+                color: color,
+                borderColor: color,
+              }}
+            >
+              Go Back
             </Button>
           </Paper>
         </motion.div>
