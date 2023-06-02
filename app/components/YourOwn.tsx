@@ -216,61 +216,63 @@ export default function YourOwn() {
   return (
     <div>
       {!searched && (
-        <Paper
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            bgcolor: "transparent",
-            boxShadow: "none",
-            mt: 3,
-            mb: 2,
-            mx: "auto",
-            width: "100%",
-            height: "fit-content",
-            pt: "30vh",
-          }}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
         >
-          <TextField
-            label="Enter address here"
-            onChange={handleChangeAddress}
-            variant="outlined"
+          <Paper
             sx={{
-              "& .MuiInputBase-input": {
-                color: "#fff",
-              },
-              "& .MuiFormLabel-root": {
-                color: "#0f0",
-              },
-              "& .MuiOutlinedInput-root": {
-                "&.Mui-focused fieldset": {
-                  borderColor: "#0f0",
-                },
-              },
-              "& .MuiInputBase-input::placeholder": {
-                color: "#fff",
-              },
-              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              bgcolor: "transparent",
+              boxShadow: "none",
+              mt: 3,
+              mb: 2,
+              mx: "auto",
+              width: "100vw",
+              height: "fit-content",
+              pt: "30vh",
             }}
-          />
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1 }}
           >
+            <TextField
+              label="Enter address here"
+              onChange={handleChangeAddress}
+              variant="outlined"
+              sx={{
+                ml: 1,
+                "& .MuiInputBase-input": {
+                  color: "#fff",
+                },
+                "& .MuiFormLabel-root": {
+                  color: "#0f0",
+                  textAlign: "center",
+                },
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#0f0",
+                  },
+                },
+                "& .MuiInputBase-input::placeholder": {
+                  color: "#0f0",
+                },
+              }}
+            />
             <Button
               variant="outlined"
               onClick={handleButtonClick}
               sx={{
                 mt: 2,
-                minWidth: "fit-content",
+                width: 300,
+                color: "#0f0",
+                borderColor: "#0f0",
               }}
             >
               Submit
             </Button>
-          </motion.div>
-        </Paper>
+          </Paper>
+        </motion.div>
       )}
       <motion.div
         initial={{ opacity: 0 }}
