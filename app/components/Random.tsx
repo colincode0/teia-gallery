@@ -151,7 +151,7 @@ export default function MainDisplay() {
     "tz1LtRavzB4VYRuYwcMbohYnV6SU2iRnU5DF",
   ];
 
-  const itemsPerPage = 60;
+  const itemsPerPage = 62;
   const { loading, error, data } = useQuery(GET_DIGITAL_ART, {
     variables: { limit: itemsPerPage, offset: (page - 1) * itemsPerPage },
   });
@@ -217,20 +217,7 @@ export default function MainDisplay() {
                 }}
               >
                 {art.extra[0].mime_type.startsWith("video/") ? (
-                  <div
-                    style={{
-                      backgroundImage: `url(${ipfsHashToUrl(
-                        art.display_uri || art.thumbnail_uri
-                      )})`,
-                      backgroundSize: "contain",
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "center center",
-                      width: "300px",
-                      height: "300px",
-                      maxWidth: "100%",
-                      maxHeight: "100%",
-                    }}
-                  />
+                  <VideoItem art={art} />
                 ) : art.extra[0].mime_type === "image/jpeg" ||
                   art.extra[0].mime_type === "image/png" ||
                   art.extra[0].mime_type === "image/gif" ? (
@@ -400,6 +387,86 @@ function IframeItem({ art: art }: { art: digitalArt }) {
           height="600"
           style={{ border: 0 }}
         />
+      </Dialog>
+    </div>
+  );
+}
+
+function VideoItem({ art }: { art: digitalArt }) {
+  const [itemOpen, setItemOpen] = useState(false);
+
+  return (
+    <div>
+      <div
+        onClick={() => setItemOpen(true)}
+        style={{
+          backgroundImage: `url(${ipfsHashToUrl(
+            art.display_uri || art.thumbnail_uri
+          )})`,
+          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center center",
+          width: "300px",
+          height: "300px",
+          maxWidth: "100%",
+          maxHeight: "100%",
+        }}
+      />
+
+      <Dialog
+        open={itemOpen}
+        onClose={() => setItemOpen(false)}
+        sx={{
+          "& .MuiBackdrop-root": {
+            backgroundColor: "rgba(0, 0, 0, 0.95)",
+          },
+          "& .MuiDialog-paper": {
+            backgroundColor: "black",
+          },
+        }}
+      >
+        <video
+          src={ipfsHashToUrl(art.extra[0].uri) as string}
+          controls
+          style={{
+            maxWidth: "100%",
+            maxHeight: "100%",
+            backgroundColor: "black",
+          }}
+        />
+        <Stack
+          sx={{
+            bgcolor: "black",
+            color: "white",
+            p: 1,
+            display: "flex",
+            wordWrap: "break-word",
+          }}
+        >
+          <Typography variant="h4">Title: {art.name}</Typography>
+          <Typography>Minted: {formatDate(art.timestamp)}</Typography>
+          <Typography>Total Supply: {art.supply}</Typography>
+          <Divider sx={{ bgcolor: "white", my: 1 }} />
+          <Link
+            href={`https://objkt.com/profile/${art.creators[0].creator_address}/created`}
+            target="_blank"
+            rel="noopener"
+          >
+            <Typography variant="caption">Link to creator on OBJKT</Typography>
+          </Link>
+          <Typography variant="caption">
+            Description: {art.description}
+          </Typography>
+          <Box sx={{ mt: 2 }}>
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={() => setItemOpen(false)}
+            >
+              Close
+            </Button>
+          </Box>
+        </Stack>
       </Dialog>
     </div>
   );
