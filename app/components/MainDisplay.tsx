@@ -34,14 +34,14 @@ export default function ToggleButtons() {
             >
               Random
             </ToggleButton>
-            <ToggleButton
+            {/* <ToggleButton
               value={1}
               sx={{
                 color: view === 1 ? "#000" : "#888",
               }}
             >
               Latest
-            </ToggleButton>
+            </ToggleButton> */}
             <ToggleButton
               value={2}
               sx={{

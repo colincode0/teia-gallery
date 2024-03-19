@@ -142,6 +142,7 @@ function formatAMPM(hour: number) {
     return "PM";
   }
 }
+
 export default function MainDisplay() {
   const isMobile = useMediaQuery("(max-width:600px)");
   const [digitalArt, setDigitalArt] = useState<digitalArt[]>([]);
@@ -151,7 +152,7 @@ export default function MainDisplay() {
     "tz1LtRavzB4VYRuYwcMbohYnV6SU2iRnU5DF",
   ];
 
-  const itemsPerPage = 62;
+  const itemsPerPage = 60;
   const { loading, error, data } = useQuery(GET_DIGITAL_ART, {
     variables: { limit: itemsPerPage, offset: (page - 1) * itemsPerPage },
   });
@@ -163,6 +164,17 @@ export default function MainDisplay() {
   }, [data]);
 
   const totalPages = Math.ceil(digitalArt.length / itemsPerPage);
+
+  const excludedNames = [
+    "Windowlicker",
+    "Tightening",
+    "Nude Pixel 35",
+    "The Love Distortion",
+    "Vaim Violence",
+    "Feather Therapy",
+    "WILD VIOLET",
+    "YUCK FOU",
+  ];
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
@@ -205,7 +217,7 @@ export default function MainDisplay() {
                 (art) =>
                   !unwantedAddresses.some(
                     (address) => address === art.creators[0].creator_address
-                  )
+                  ) && !excludedNames?.includes(art.name)
               )
           ).map((art, i) => (
             <Grid item xs={12} md={4} lg={3} key={i}>

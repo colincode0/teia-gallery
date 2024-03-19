@@ -138,6 +138,7 @@ function formatAMPM(hour: number) {
     return "PM";
   }
 }
+
 export default function Sorted() {
   const isMobile = useMediaQuery("(max-width:600px)");
   const [digitalArt, setDigitalArt] = useState<digitalArt[]>([]);
