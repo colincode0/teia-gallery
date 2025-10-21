@@ -180,8 +180,8 @@ export default function YourOwn({ setView }: { setView: Function }) {
     }
   );
 
-  // Hardcoded total pages - will be dynamic based on user's NFT count
-  const totalPages = 7; // Default for YourOwn component (assuming ~168 NFTs for users)
+  // Hardcoded total pages based on actual NFT count (7 pages)
+  const totalPages = 7;
 
   const handleButtonClick = () => {
     getDigitalArt();
@@ -403,7 +403,7 @@ export default function YourOwn({ setView }: { setView: Function }) {
                 p: 2,
                 display: "flex",
                 flexDirection: "column",
-                bgcolor: "#444",
+                bgcolor: "#000",
                 my: 2,
               }}
             >
@@ -417,7 +417,10 @@ export default function YourOwn({ setView }: { setView: Function }) {
               >
                 <Button
                   variant="outlined"
-                  onClick={() => setPage(Math.max(1, page - 1))}
+                  onClick={() => {
+                    setPage(Math.max(1, page - 1));
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
                   disabled={page === 1}
                   sx={{
                     color: "white",
@@ -439,7 +442,10 @@ export default function YourOwn({ setView }: { setView: Function }) {
                 </Typography>
                 <Button
                   variant="outlined"
-                  onClick={() => setPage(Math.min(totalPages, page + 1))}
+                  onClick={() => {
+                    setPage(Math.min(totalPages, page + 1));
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
                   disabled={page === totalPages}
                   sx={{
                     color: "white",

@@ -125,12 +125,13 @@ const MainDisplay = React.memo(() => {
     return shuffledArt.slice(startIndex, endIndex);
   }, [shuffledArt, page, itemsPerPage]);
 
-  // Hardcoded total pages based on previous NFT count (240 NFTs = 10 pages with 24 per page)
-  const totalPages = 10;
+  // Hardcoded total pages based on actual NFT count (7 pages)
+  const totalPages = 7;
 
   const handlePageChange = useCallback(
     (event: React.ChangeEvent<unknown>, value: number) => {
       setPage(value);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     },
     []
   );
@@ -209,7 +210,7 @@ const MainDisplay = React.memo(() => {
                 p: 2,
                 display: "flex",
                 flexDirection: "column",
-                bgcolor: "#444",
+                bgcolor: "#000",
                 my: 2,
               }}
             >
@@ -223,7 +224,10 @@ const MainDisplay = React.memo(() => {
               >
                 <Button
                   variant="outlined"
-                  onClick={() => setPage(Math.max(1, page - 1))}
+                  onClick={() => {
+                    setPage(Math.max(1, page - 1));
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
                   disabled={page === 1}
                   sx={{
                     color: "white",
@@ -245,7 +249,10 @@ const MainDisplay = React.memo(() => {
                 </Typography>
                 <Button
                   variant="outlined"
-                  onClick={() => setPage(Math.min(totalPages, page + 1))}
+                  onClick={() => {
+                    setPage(Math.min(totalPages, page + 1));
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
                   disabled={page === totalPages}
                   sx={{
                     color: "white",
