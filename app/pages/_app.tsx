@@ -4,13 +4,29 @@ import {
   ApolloClient,
   InMemoryCache,
   ApolloProvider,
-  gql,
+  createHttpLink,
 } from "@apollo/client";
 
-const client = new ApolloClient({
+const httpLink = createHttpLink({
   uri: "https://data.objkt.com/v3/graphql",
+});
 
-  cache: new InMemoryCache(),
+const client = new ApolloClient({
+  link: httpLink,
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          token: {
+            merge: false, // Don't merge, replace
+          },
+          token_holder: {
+            merge: false, // Don't merge, replace
+          },
+        },
+      },
+    },
+  }),
 });
 
 export default function App({ Component, pageProps }: AppProps) {

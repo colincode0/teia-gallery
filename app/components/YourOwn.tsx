@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useQuery, gql, useLazyQuery } from "@apollo/client";
 import Image from "next/image";
-import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 import {
   Button,
@@ -161,7 +160,7 @@ export default function YourOwn({ setView }: { setView: Function }) {
     setAddress(event.target.value);
   };
 
-  const itemsPerPage = 60;
+  const itemsPerPage = 24;
 
   const [getDigitalArt, { loading, error, data }] = useLazyQuery(
     GET_DIGITAL_ART,
@@ -181,6 +180,9 @@ export default function YourOwn({ setView }: { setView: Function }) {
     }
   );
 
+  // Hardcoded total pages - will be dynamic based on user's NFT count
+  const totalPages = 7; // Default for YourOwn component (assuming ~168 NFTs for users)
+
   const handleButtonClick = () => {
     getDigitalArt();
     setSearched(true);
@@ -193,6 +195,14 @@ export default function YourOwn({ setView }: { setView: Function }) {
   useEffect(() => {
     console.log("digitalArt", digitalArt);
   }, [digitalArt]);
+
+  // Refetch data when page changes
+  useEffect(() => {
+    if (address && searched) {
+      getDigitalArt();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
@@ -386,7 +396,7 @@ export default function YourOwn({ setView }: { setView: Function }) {
               </Grid>
             ))}
         </Grid>
-        {digitalArt.length > 0 && (
+        {digitalArt.length > 0 && totalPages > 1 && (
           <Stack spacing={2}>
             <Paper
               sx={{
@@ -397,12 +407,55 @@ export default function YourOwn({ setView }: { setView: Function }) {
                 my: 2,
               }}
             >
-              <Box style={{ display: "flex", justifyContent: "center" }}>
-                <Pagination
-                  count={10}
-                  page={page}
-                  onChange={handlePageChange}
-                />
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: 2,
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  onClick={() => setPage(Math.max(1, page - 1))}
+                  disabled={page === 1}
+                  sx={{
+                    color: "white",
+                    borderColor: "white",
+                    "&:hover": {
+                      borderColor: "#ccc",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    },
+                    "&:disabled": {
+                      borderColor: "#666",
+                      color: "#666",
+                    },
+                  }}
+                >
+                  ← Previous
+                </Button>
+                <Typography variant="body2" sx={{ color: "white", mx: 2 }}>
+                  Page {page} of {totalPages}
+                </Typography>
+                <Button
+                  variant="outlined"
+                  onClick={() => setPage(Math.min(totalPages, page + 1))}
+                  disabled={page === totalPages}
+                  sx={{
+                    color: "white",
+                    borderColor: "white",
+                    "&:hover": {
+                      borderColor: "#ccc",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    },
+                    "&:disabled": {
+                      borderColor: "#666",
+                      color: "#666",
+                    },
+                  }}
+                >
+                  Next →
+                </Button>
               </Box>
             </Paper>
           </Stack>

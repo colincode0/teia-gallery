@@ -1,22 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useQuery, gql } from "@apollo/client";
-import Image from "next/image";
-import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 import {
-  Button,
   CircularProgress,
   Dialog,
-  Divider,
   Grid,
   Paper,
-  Skeleton,
   Typography,
   useMediaQuery,
+  Button,
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import { OptimizedImage } from "./OptimizedImage";
+import { ArtDialog } from "./ArtDialog";
+import {
+  ipfsHashToUrl,
+  formatDate,
+  DigitalArtWithToken,
+} from "../utils/helpers";
 
 const GET_DIGITAL_ART = gql`
   query MyQuery($limit: Int!, $offset: Int!) {
@@ -61,94 +63,20 @@ const GET_DIGITAL_ART = gql`
   }
 `;
 
-function ipfsHashToUrl(hash: string) {
-  if (!hash) return null;
-  const cleanHash = hash.replace("ipfs://", "");
-  return `https://ipfs.io/ipfs/${cleanHash}`;
-}
-
-type digitalArt = {
-  token: {
-    artifact_uri: string;
-    average: number;
-    decimals: number;
-    description: string;
-    display_uri: string;
-    extra: Array<{
-      mime_type: string;
-      size: number;
-      uri: string;
-    }>;
-    flag: string;
-    highest_offer: number;
-    is_boolean_amount: boolean;
-    last_listed: number;
-    last_metadata_update: number;
-    level: number;
-    lowest_ask: number;
-    metadata: string;
-    mime: string;
-    name: string;
-    ophash: string;
-    rights: string;
-    supply: number;
-    symbol: string;
-    thumbnail_uri: string;
-    timestamp: string;
-    tzip16_key: string;
-    creators: {
-      creator_address: string;
-    }[];
-  };
-};
-
-function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date
-    .getFullYear()
-    .toString()
-    .substring(2)} at ${formatHour(date.getHours())}:${formatMinute(
-    date.getMinutes()
-  )} ${formatAMPM(date.getHours())}`;
-  return formattedDate;
-}
-
-function formatHour(hour: number) {
-  if (hour === 0) {
-    return "12";
-  } else if (hour > 12) {
-    return (hour - 12).toString();
-  } else {
-    return hour.toString();
-  }
-}
-
-function formatMinute(minute: number) {
-  if (minute < 10) {
-    return `0${minute}`;
-  } else {
-    return minute.toString();
-  }
-}
-
-function formatAMPM(hour: number) {
-  if (hour < 12) {
-    return "AM";
-  } else {
-    return "PM";
-  }
-}
-
-export default function Sorted() {
+const Sorted = React.memo(() => {
   const isMobile = useMediaQuery("(max-width:600px)");
-  const [digitalArt, setDigitalArt] = useState<digitalArt[]>([]);
+  const [digitalArt, setDigitalArt] = useState<DigitalArtWithToken[]>([]);
   const [page, setPage] = useState(1);
-  const unwantedAddresses = [
-    "tz1erY7SqRTAM6UmdwzfmQ48VqB6675uUrHH",
-    "tz1LtRavzB4VYRuYwcMbohYnV6SU2iRnU5DF",
-  ];
 
-  const itemsPerPage = 60;
+  const unwantedAddresses = useMemo(
+    () => [
+      "tz1erY7SqRTAM6UmdwzfmQ48VqB6675uUrHH",
+      "tz1LtRavzB4VYRuYwcMbohYnV6SU2iRnU5DF",
+    ],
+    []
+  );
+
+  const itemsPerPage = 24;
   const { loading, error, data } = useQuery(GET_DIGITAL_ART, {
     variables: { limit: itemsPerPage, offset: (page - 1) * itemsPerPage },
   });
@@ -156,18 +84,18 @@ export default function Sorted() {
   useEffect(() => {
     if (data) {
       setDigitalArt(data.token_holder);
-      console.log(data.token_holder);
     }
   }, [data]);
 
-  const totalPages = Math.ceil(digitalArt.length / itemsPerPage);
+  // Hardcoded total pages based on previous NFT count (240 NFTs = 10 pages with 24 per page)
+  const totalPages = 10;
 
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
-    setPage(value);
-  };
+  const handlePageChange = useCallback(
+    (event: React.ChangeEvent<unknown>, value: number) => {
+      setPage(value);
+    },
+    []
+  );
 
   if (loading)
     return (
@@ -197,7 +125,7 @@ export default function Sorted() {
         <Grid container spacing={1}>
           {digitalArt &&
             digitalArt.map((art, i) => (
-              <Grid item xs={12} md={4} lg={3} key={i}>
+              <Grid item xs={12} md={4} lg={3} key={`${art.token.ophash}-${i}`}>
                 <Stack
                   sx={{
                     display: "flex",
@@ -205,49 +133,26 @@ export default function Sorted() {
                     justifyContent: "center",
                   }}
                 >
-                  {art.token.extra[0].mime_type.startsWith("video/") ? (
-                    <div
-                      style={{
-                        backgroundImage: `url(${ipfsHashToUrl(
-                          art.token.display_uri || art.token.thumbnail_uri
-                        )})`,
-                        backgroundSize: "contain",
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "center center",
-                        width: "300px",
-                        height: "300px",
-                        maxWidth: "100%",
-                        maxHeight: "100%",
-                      }}
-                    />
-                  ) : art.token.extra[0].mime_type === "image/jpeg" ||
-                    art.token.extra[0].mime_type === "image/png" ||
-                    art.token.extra[0].mime_type === "image/gif" ? (
-                    <div>
-                      <ImageItem art={art} />
-                    </div>
-                  ) : art.token.extra[0].mime_type === "audio/mpeg" ? (
+                  {art.token.extra[0]?.mime_type.startsWith("video/") ? (
+                    <VideoItem art={art} />
+                  ) : art.token.extra[0]?.mime_type === "image/jpeg" ||
+                    art.token.extra[0]?.mime_type === "image/png" ||
+                    art.token.extra[0]?.mime_type === "image/gif" ? (
+                    <ImageItem art={art} />
+                  ) : art.token.extra[0]?.mime_type === "audio/mpeg" ? (
                     <audio
                       src={ipfsHashToUrl(art.token.extra[0].uri) as string}
                       controls
                     />
-                  ) : art.token.extra[0].mime_type ===
+                  ) : art.token.extra[0]?.mime_type ===
                     "application/x-directory" ? (
                     <IframeItem art={art} />
                   ) : art.token.display_uri ? (
-                    <div
-                      style={{
-                        backgroundImage: `url(${ipfsHashToUrl(
-                          art.token.display_uri
-                        )})`,
-                        backgroundSize: "contain",
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "center center",
-                        width: "300px",
-                        height: "300px",
-                        maxWidth: "100%",
-                        maxHeight: "100%",
-                      }}
+                    <OptimizedImage
+                      art={art}
+                      width={300}
+                      height={300}
+                      priority={i < 8} // Prioritize first 8 images
                     />
                   ) : (
                     <Typography>Unsupported file format</Typography>
@@ -261,115 +166,107 @@ export default function Sorted() {
               </Grid>
             ))}
         </Grid>
-        <Stack spacing={2}>
-          <Paper
-            sx={{
-              p: 2,
-              display: "flex",
-              flexDirection: "column",
-              bgcolor: "#444",
-              my: 2,
-            }}
-          >
-            <Box style={{ display: "flex", justifyContent: "center" }}>
-              <Pagination count={5} page={page} onChange={handlePageChange} />
-            </Box>
-          </Paper>
-        </Stack>
+        {totalPages > 1 && (
+          <Stack spacing={2}>
+            <Paper
+              sx={{
+                p: 2,
+                display: "flex",
+                flexDirection: "column",
+                bgcolor: "#444",
+                my: 2,
+              }}
+            >
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: 2,
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  onClick={() => setPage(Math.max(1, page - 1))}
+                  disabled={page === 1}
+                  sx={{
+                    color: "white",
+                    borderColor: "white",
+                    "&:hover": {
+                      borderColor: "#ccc",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    },
+                    "&:disabled": {
+                      borderColor: "#666",
+                      color: "#666",
+                    },
+                  }}
+                >
+                  ← Previous
+                </Button>
+                <Typography variant="body2" sx={{ color: "white", mx: 2 }}>
+                  Page {page} of {totalPages}
+                </Typography>
+                <Button
+                  variant="outlined"
+                  onClick={() => setPage(Math.min(totalPages, page + 1))}
+                  disabled={page === totalPages}
+                  sx={{
+                    color: "white",
+                    borderColor: "white",
+                    "&:hover": {
+                      borderColor: "#ccc",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    },
+                    "&:disabled": {
+                      borderColor: "#666",
+                      color: "#666",
+                    },
+                  }}
+                >
+                  Next →
+                </Button>
+              </Box>
+            </Paper>
+          </Stack>
+        )}
       </motion.div>
     </div>
   );
-}
+});
 
-function ImageItem({ art: art }: { art: digitalArt }) {
+Sorted.displayName = "Sorted";
+
+const ImageItem = React.memo(({ art }: { art: DigitalArtWithToken }) => {
   const [itemOpen, setItemOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+
   return (
-    <div>
-      {loading ? (
-        <Skeleton variant="rectangular" width={300} height={300} />
-      ) : (
-        <div
-          onClick={() => setItemOpen(true)}
-          style={{
-            backgroundImage: `url(${ipfsHashToUrl(art.token.extra[0].uri)})`,
-            backgroundSize: "contain",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center center",
-            width: "300px",
-            height: "300px",
-            maxWidth: "100%",
-            maxHeight: "100%",
-          }}
-        />
-      )}
-      <Dialog
-        open={itemOpen}
-        onClose={() => setItemOpen(false)}
-        sx={{
-          "& .MuiBackdrop-root": {
-            backgroundColor: "rgba(0, 0, 0, 0.95)",
-          },
-          "& .MuiDialog-paper": {
-            backgroundColor: "black",
-          },
-        }}
-      >
-        <div
+    <>
+      <OptimizedImage
+        art={art}
+        width={300}
+        height={300}
+        onClick={() => setItemOpen(true)}
+      />
+      <ArtDialog open={itemOpen} onClose={() => setItemOpen(false)} art={art}>
+        <OptimizedImage
+          art={art}
+          width={500}
+          height={500}
           onClick={() => setItemOpen(false)}
-          style={{
-            backgroundImage: `url(${ipfsHashToUrl(art.token.extra[0].uri)})`,
-            backgroundSize: "contain",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center center",
-            width: "500px",
-            height: "500px",
-            maxWidth: "100%",
-            maxHeight: "100%",
-            backgroundColor: "black",
-          }}
         />
-        <Stack
-          sx={{
-            bgcolor: "black",
-            color: "white",
-            p: 1,
-            display: "flex",
-          }}
-        >
-          <Typography variant="h4">Title: {art.token.name}</Typography>
-          <Typography>Minted: {formatDate(art.token.timestamp)}</Typography>
-          <Typography>Total Supply: {art.token.supply}</Typography>
-          <Divider sx={{ bgcolor: "white", my: 1 }} />
-          <Link
-            href={`https://objkt.com/profile/${art.token.creators[0].creator_address}/created`}
-            target="_blank"
-            rel="noopener"
-          >
-            <Typography variant="caption">Link to creator on OBJKT</Typography>
-          </Link>
-          <Typography variant="caption">
-            Description: {art.token.description}
-          </Typography>
-          <Box sx={{ mt: 2 }}>
-            <Button
-              variant="outlined"
-              fullWidth
-              onClick={() => setItemOpen(false)}
-            >
-              Close
-            </Button>
-          </Box>
-        </Stack>
-      </Dialog>
-    </div>
+      </ArtDialog>
+    </>
   );
-}
+});
 
-function IframeItem({ art: art }: { art: digitalArt }) {
+ImageItem.displayName = "ImageItem";
+
+const IframeItem = React.memo(({ art }: { art: DigitalArtWithToken }) => {
   const [itemOpen, setItemOpen] = useState(false);
+
   return (
-    <div>
+    <>
       <div
         onClick={() => setItemOpen(true)}
         style={{
@@ -381,16 +278,49 @@ function IframeItem({ art: art }: { art: digitalArt }) {
           height: "300px",
           maxWidth: "100%",
           maxHeight: "100%",
+          cursor: "pointer",
         }}
       />
       <Dialog open={itemOpen} onClose={() => setItemOpen(false)}>
         <iframe
-          src={ipfsHashToUrl(art.token.extra[0].uri) as string}
+          src={ipfsHashToUrl(art.token.extra[0]?.uri) as string}
           width="600"
           height="600"
           style={{ border: 0 }}
         />
       </Dialog>
-    </div>
+    </>
   );
-}
+});
+
+IframeItem.displayName = "IframeItem";
+
+const VideoItem = React.memo(({ art }: { art: DigitalArtWithToken }) => {
+  const [itemOpen, setItemOpen] = useState(false);
+
+  return (
+    <>
+      <OptimizedImage
+        art={art}
+        width={300}
+        height={300}
+        onClick={() => setItemOpen(true)}
+      />
+      <ArtDialog open={itemOpen} onClose={() => setItemOpen(false)} art={art}>
+        <video
+          src={ipfsHashToUrl(art.token.extra[0]?.uri) as string}
+          controls
+          style={{
+            maxWidth: "100%",
+            maxHeight: "100%",
+            backgroundColor: "black",
+          }}
+        />
+      </ArtDialog>
+    </>
+  );
+});
+
+VideoItem.displayName = "VideoItem";
+
+export default Sorted;
